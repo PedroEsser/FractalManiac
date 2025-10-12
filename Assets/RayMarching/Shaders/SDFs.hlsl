@@ -17,3 +17,12 @@ float box_sdf(float3 d, float3 b){
 float torus_sdf(float3 d, float r1, float r2){
     return length(float2(length(d.xz) - r1, d.y)) - r2;
 }
+
+float cross_sdf(float3 d)
+{
+    d = abs(d);
+    float da = max(d.x, d.y);
+    float db = max(d.y, d.z);
+    float dc = max(d.z, d.x);
+    return min(da,min(db,dc))-1.0;
+}

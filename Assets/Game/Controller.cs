@@ -10,6 +10,7 @@ public class Controller : MonoBehaviour
     public RawImage image;
     public RenderTexture target;
     private int kernel;
+    public Vector4 DebugVector;
     void Start()
     {
         kernel = computeShader.FindKernel("CSMain");
@@ -25,5 +26,6 @@ public class Controller : MonoBehaviour
         int threadGroupsX = Mathf.CeilToInt(target.width / 8.0f);
         int threadGroupsY = Mathf.CeilToInt(target.height / 8.0f);
         computeShader.Dispatch(kernel, threadGroupsX, threadGroupsY, 1);
+        computeShader.SetVector("Debug", DebugVector);
     }
 }

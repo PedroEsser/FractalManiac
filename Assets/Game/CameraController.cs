@@ -22,6 +22,7 @@ public class CameraController : MonoBehaviour
     void Update()
     {
         HandleMouseLook();
+        player.HandleMovement();
         computeShader.SetMatrix("_CameraToWorld", cam.cameraToWorldMatrix);
         computeShader.SetMatrix("_CameraInverseProjection", cam.projectionMatrix.inverse);
         computeShader.SetVector("_CameraWorldPos", cam.transform.position);
@@ -32,8 +33,6 @@ public class CameraController : MonoBehaviour
 
     void HandleMouseLook()
     {
-        distanceToPlayer *= Mathf.Pow(0.75f, Input.GetAxis("Mouse ScrollWheel"));
-
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
@@ -47,13 +46,15 @@ public class CameraController : MonoBehaviour
 
         transform.rotation = Quaternion.Euler(smoothPitch, smoothYaw, 0f);
 
-        smoothPosition = Vector3.Lerp(smoothPosition, GetPositionBehindPlayer(), smoothTime);
+        float sizeFactor = Mathf.Clamp01((player.size - player.minSize) / (player.maxSize - player.minSize));
+        float followSpeed = Mathf.Lerp(10f, 2f, sizeFactor);
+        smoothPosition = Vector3.Lerp(smoothPosition, GetPositionBehindPlayer(), Time.deltaTime * followSpeed);
         transform.position = smoothPosition;
     }
 
     private Vector3 GetPositionBehindPlayer()
     {
-        return player.position - transform.forward * distanceToPlayer * player.size;
+        return player.position - transform.forward * distanceToPlayer * player.size + Vector3.up * 2 * player.size;
     }
 
     

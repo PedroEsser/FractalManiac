@@ -1,10 +1,10 @@
 #pragma kernel CSMain
-#include "Assets/RayMarching/Shaders/SDFs.hlsl"
 #include "Assets/RayMarching/Shaders/Fractal_SDFs.hlsl"
+#include "Assets/RayMarching/Shaders/Player.hlsl"
 
-#define MAX_STEPS 200
-#define MAX_DIST 1000.0
-#define EPSILON 0.001
+#define MAX_STEPS 300
+#define MAX_DIST 100.0
+#define EPSILON 0.00001
 
 RWTexture2D<float4> Result;
 
@@ -14,11 +14,7 @@ float3 _CameraWorldPos;
 float4 _ScreenParams;
 float3 _PlayerPos;
 float _PlayerSize;
-
-float playerSDF(float3 pos)
-{
-    return sphere_sdf(pos - _PlayerPos, _PlayerSize);
-}
+float4 Debug;
 
 float playerClipSDF(float3 pos)
 {
@@ -27,16 +23,21 @@ float playerClipSDF(float3 pos)
 
 float sceneSDF(float3 pos)
 {
-    //return torus_sdf(pos, 60, 10);
-    float fractal_dist = abs(mandelbulbSDF(pos, 30));
-    float dist_scene = max(fractal_dist, -playerClipSDF(pos));
-    
-    return min(dist_scene, playerSDF(pos));
+    /*float fractal_dist = mandelbulbSDF(pos, 40);
+    if(fractal_dist < -Debug.x){
+        fractal_dist = -fractal_dist - 2 * Debug.x;
+    }*/
+    float fractal_dist = mengerSpongeSDF(pos, 8);
+    float dist_scene = max(fractal_dist, -playerClipSDF(pos) * Debug.y);
+    return dist_scene;
     //return fractal_dist;
 }
 
 float3 RayMarchScene(float3 rayOrigin, float3 rayDir)
 {
+    if(RaySphereIntersect(rayOrigin, rayDir, _PlayerPos, _PlayerSize)){
+        return float3(1, 1, 0);
+    }
     float totalDist = 0.0;
 
     for (int i = 0; i < MAX_STEPS; i++)
@@ -45,8 +46,7 @@ float3 RayMarchScene(float3 rayOrigin, float3 rayDir)
         float dist = sceneSDF(pos);
 
         if (dist < EPSILON){
-            float3 col = playerSDF(pos) < EPSILON ? float3(1, 1, 0) : float3(1, 1, 1);
-            return col * exp(-totalDist);
+            return float3(1, 1, 1) * exp(-totalDist * Debug.z);
         }
 
         totalDist += dist;
