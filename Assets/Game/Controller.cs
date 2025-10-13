@@ -11,6 +11,7 @@ public class Controller : MonoBehaviour
     public RenderTexture target;
     private int kernel;
     public Vector4 DebugVector;
+    public Light directionalLight;
     void Start()
     {
         kernel = computeShader.FindKernel("CSMain");
@@ -27,5 +28,6 @@ public class Controller : MonoBehaviour
         int threadGroupsY = Mathf.CeilToInt(target.height / 8.0f);
         computeShader.Dispatch(kernel, threadGroupsX, threadGroupsY, 1);
         computeShader.SetVector("Debug", DebugVector);
+        computeShader.SetVector("_LightDirection", directionalLight.transform.forward);
     }
 }

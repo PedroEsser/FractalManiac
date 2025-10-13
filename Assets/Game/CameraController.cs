@@ -54,7 +54,7 @@ public class CameraController : MonoBehaviour
 
     private Vector3 GetPositionBehindPlayer()
     {
-        return player.position - transform.forward * distanceToPlayer * player.size + Vector3.up * 2 * player.size;
+        return player.position - transform.forward * distanceToPlayer * player.smoothSize + Vector3.up * 2 * player.smoothSize;
     }
 
     

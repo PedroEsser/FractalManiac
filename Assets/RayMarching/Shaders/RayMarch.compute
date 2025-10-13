@@ -1,20 +1,9 @@
 #pragma kernel CSMain
+#include "Assets/RayMarching/Shaders/Globals.hlsl"
 #include "Assets/RayMarching/Shaders/Fractal_SDFs.hlsl"
 #include "Assets/RayMarching/Shaders/Player.hlsl"
 
-#define MAX_STEPS 300
-#define MAX_DIST 100.0
-#define EPSILON 0.00001
-
 RWTexture2D<float4> Result;
-
-float4x4 _CameraToWorld;
-float4x4 _CameraInverseProjection;
-float3 _CameraWorldPos;
-float4 _ScreenParams;
-float3 _PlayerPos;
-float _PlayerSize;
-float4 Debug;
 
 float playerClipSDF(float3 pos)
 {
@@ -27,17 +16,14 @@ float sceneSDF(float3 pos)
     if(fractal_dist < -Debug.x){
         fractal_dist = -fractal_dist - 2 * Debug.x;
     }*/
-    float fractal_dist = mengerSpongeSDF(pos, 8);
+    float fractal_dist = mengerSpongeSDF(pos, 5);
     float dist_scene = max(fractal_dist, -playerClipSDF(pos) * Debug.y);
     return dist_scene;
     //return fractal_dist;
 }
 
-float3 RayMarchScene(float3 rayOrigin, float3 rayDir)
+float4 RayMarchScene(float3 rayOrigin, float3 rayDir)
 {
-    if(RaySphereIntersect(rayOrigin, rayDir, _PlayerPos, _PlayerSize)){
-        return float3(1, 1, 0);
-    }
     float totalDist = 0.0;
 
     for (int i = 0; i < MAX_STEPS; i++)
@@ -46,15 +32,49 @@ float3 RayMarchScene(float3 rayOrigin, float3 rayDir)
         float dist = sceneSDF(pos);
 
         if (dist < EPSILON){
-            return float3(1, 1, 1) * exp(-totalDist * Debug.z);
+            return float4(pos, totalDist);
         }
 
         totalDist += dist;
         if (totalDist > MAX_DIST)
-            break;
+            return float4(0, 0, 0, INFINITY);
     }
 
-    return float3(0, 0, 0);
+    return float4(0, 0, 0, INFINITY);
+}
+
+float ShadowAt(float3 pos)
+{
+    float3 rayOrigin = pos + -_LightDirection * 50;
+    float4 sceneHitInfo = RayMarchScene(rayOrigin, _LightDirection);
+    if(sceneHitInfo.w != INFINITY && length(sceneHitInfo.xyz - pos) < 0.01){
+        return 1;
+    }
+    return 0.5;
+}
+
+float3 sceneColorAt(float4 sceneHitInfo)
+{
+    if(sceneHitInfo.w == INFINITY){
+        return float3(0, 0, 0);
+    }
+
+    float distAttenuation = 1 / (1 + sceneHitInfo.w * Debug.z);
+    return float3(1, .75, .5) * ShadowAt(sceneHitInfo.xyz) * distAttenuation;
+}
+
+float3 CalculateColor(float3 rayOrigin, float3 rayDir)
+{
+    float4 playerHitInfo = RaySphereIntersection(rayOrigin, rayDir, _PlayerPos, _PlayerSize);
+    float4 sceneHitInfo = RayMarchScene(rayOrigin, rayDir);
+    if(playerHitInfo.w != INFINITY){
+        if(playerHitInfo.w < sceneHitInfo.w){
+            return float3(1, 1, 0);
+        }
+        float3 sceneColor = sceneColorAt(sceneHitInfo);
+        return (sceneColor + float3(0, 1, 1)) * 0.5;
+    }
+    return sceneColorAt(sceneHitInfo);
 }
 
 [numthreads(8,8,1)]
@@ -71,6 +91,6 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     float3 rayDir = normalize(mul((float3x3)_CameraToWorld, rayCam.xyz));
     float3 rayOrigin = _CameraWorldPos;
 
-    float3 color = RayMarchScene(rayOrigin, rayDir);
+    float3 color = CalculateColor(rayOrigin, rayDir);
     Result[id.xy] = float4(color, 1.0);
 }
