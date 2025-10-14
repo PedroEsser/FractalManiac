@@ -18,6 +18,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         smoothSize = size;
+
     }
 
     public void HandleMovement()

@@ -63,16 +63,30 @@ float3 sceneColorAt(float4 sceneHitInfo)
     return float3(1, .75, .5) * ShadowAt(sceneHitInfo.xyz) * distAttenuation;
 }
 
+float3 playerColorAt(float4 playerHitInfo)
+{
+    float3 p = normalize(playerHitInfo.xyz - _PlayerPos);
+    float u = atan2(p.z, p.x) / (2.0 * PI) + 0.5;
+    float v = p.y * 0.5 + 0.5;
+    float2 uv = float2(u, v);
+    int2 texSize = int2(0, 0); // width, height
+    SpaceshipTex.GetDimensions(texSize.x, texSize.y);
+    int2 texel = int2(uv * float2(texSize - 1));
+    float3 playerColor = SpaceshipTex.Load(int3(texel, 0)).rgb;
+    return playerColor;
+}
+
 float3 CalculateColor(float3 rayOrigin, float3 rayDir)
 {
     float4 playerHitInfo = RaySphereIntersection(rayOrigin, rayDir, _PlayerPos, _PlayerSize);
     float4 sceneHitInfo = RayMarchScene(rayOrigin, rayDir);
     if(playerHitInfo.w != INFINITY){
         if(playerHitInfo.w < sceneHitInfo.w){
-            return float3(1, 1, 0);
+            return playerColorAt(playerHitInfo);
         }
+
         float3 sceneColor = sceneColorAt(sceneHitInfo);
-        return (sceneColor + float3(0, 1, 1)) * 0.5;
+        return (sceneColor + playerColorAt(playerHitInfo)) * 0.5;
     }
     return sceneColorAt(sceneHitInfo);
 }

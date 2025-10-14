@@ -12,6 +12,7 @@ public class Controller : MonoBehaviour
     private int kernel;
     public Vector4 DebugVector;
     public Light directionalLight;
+    public Texture2D spaceshipTexture;
     void Start()
     {
         kernel = computeShader.FindKernel("CSMain");
@@ -20,6 +21,7 @@ public class Controller : MonoBehaviour
         target.Create();
         computeShader.SetTexture(kernel, "Result", target);
         image.texture = target;
+        computeShader.SetTexture(kernel, "SpaceshipTex", spaceshipTexture);
     }
 
     void Update()
