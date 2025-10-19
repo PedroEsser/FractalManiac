@@ -12,13 +12,16 @@ public class Player : MonoBehaviour
     public float smoothSize;
     public float accelerationFactor = .02f;
 
+    public float gravity = 0.01f;
+
     public float minSize = 1e-5f;
     public float maxSize = 0.1f;
+    public SDF sdf;
 
     void Start()
     {
         smoothSize = size;
-
+        sdf = new Mandelbulb(20, 2, 8);
     }
 
     public void HandleMovement()

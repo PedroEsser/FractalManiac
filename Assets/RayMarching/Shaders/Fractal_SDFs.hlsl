@@ -1,4 +1,4 @@
-#include "Assets/RayMarching/Shaders/SDFs.hlsl"
+#include "Assets/RayMarching/Shaders/Globals.hlsl"
 
 float mandelbulbSDF(float3 p, int maxIter = 20, float power = 8.0)
 {
@@ -23,7 +23,7 @@ float mandelbulbSDF(float3 p, int maxIter = 20, float power = 8.0)
         theta *= power;
         phi *= power;
 
-        z = zr * float3(sin(theta) * cos(phi), sin(phi) * sin(theta) + 0.0, cos(theta));
+        z = zr * float3(sin(theta) * cos(phi), sin(phi) * sin(theta), cos(theta));
         z += p; // add original point
     }
     return 0.5 * log(r) * r / dr;

@@ -22,5 +22,9 @@ float3 _LightDirection;
 
 float4 Debug;
 
-
+#include "Assets/RayMarching/Shaders/SDFs.hlsl"
+#include "Assets/RayMarching/Shaders/Fractal_SDFs.hlsl"
+#include "Assets/RayMarching/Shaders/Player.hlsl"
+#include "Assets/RayMarching/Shaders/Scene.hlsl"
+#include "Assets/RayMarching/Shaders/ColorCalculation.hlsl"
 #endif 

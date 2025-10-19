@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface SDF
 {
-    float signedDistance(Vector3 point);
+    float signedDistanceAt(Vector3 point);
 }

@@ -61,9 +61,9 @@ public class Complex3D
     }
 
 
-    public static Complex3D fromAngles(float azimuthalAngle, float polarAngle){
-        float cosPolar = Mathf.Cos(polarAngle);
-        return new Complex3D(Mathf.Cos(azimuthalAngle) * cosPolar, Mathf.Sin(azimuthalAngle) * cosPolar, Mathf.Sin(polarAngle));
+    public static Complex3D fromAngles(float azimuthalAngle, float polarAngle){   //float3(sin(theta) * cos(phi), sin(phi) * sin(theta), cos(theta))
+        float sinPolar = Mathf.Sin(polarAngle);
+        return new Complex3D(sinPolar * Mathf.Cos(azimuthalAngle), sinPolar * Mathf.Sin(azimuthalAngle), Mathf.Cos(polarAngle));
     }
 
     public static Complex3D fromMagnitudeAndAngles(float magnitude, float azimuthalAngle, float polarAngle){ return magnitude * fromAngles(azimuthalAngle, polarAngle); }
