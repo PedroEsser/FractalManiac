@@ -8,8 +8,8 @@ float ShadowAt(float3 pos)
         return 0.5;
     }
 
-    float4 lightHitInfo = RayMarchScene(rayOrigin, _LightDirection);
-    if(abs(lightHitInfo.w - 2) < 2 * EPSILON){
+    RayHitInfo lightHitInfo = RayMarchScene(rayOrigin, _LightDirection);
+    if(abs(lightHitInfo.distanceTraveled - 2) < 2 * EPSILON){
         return 1;
     }
     return 0.5;
@@ -27,23 +27,23 @@ float3 NormalAt(float3 p)
 }
 
 
-float3 SceneColorAt(float4 sceneHitInfo)
+float3 SceneColorAt(RayHitInfo sceneHitInfo)
 {
-    if(sceneHitInfo.w == INFINITY){
+    if(sceneHitInfo.distanceTraveled == INFINITY){
         return float3(0, 0, 0);
     }
 
-    float distAttenuation = 1 / (1 + sceneHitInfo.w * Debug.z);
-    return NormalAt(sceneHitInfo.xyz) * ShadowAt(sceneHitInfo.xyz) * distAttenuation;
+    float distAttenuation = 1 / (1 + sceneHitInfo.distanceTraveled * Debug.z);
+    return NormalAt(sceneHitInfo.hitPosition) * ShadowAt(sceneHitInfo.hitPosition) * distAttenuation;
 }
 
 
 float3 CalculateColor(float3 rayOrigin, float3 rayDir)
 {
     float4 playerHitInfo = RaySphereIntersection(rayOrigin, rayDir, _PlayerPos, _PlayerSize);
-    float4 sceneHitInfo = RayMarchScene(rayOrigin, rayDir);
+    RayHitInfo sceneHitInfo = RayMarchScene(rayOrigin, rayDir);
     if(playerHitInfo.w != INFINITY){
-        if(playerHitInfo.w < sceneHitInfo.w){
+        if(playerHitInfo.w < sceneHitInfo.distanceTraveled){
             return PlayerColorAt(playerHitInfo);
         }
 

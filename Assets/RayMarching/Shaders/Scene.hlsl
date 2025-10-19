@@ -12,29 +12,31 @@ float sceneSDF(float3 pos)
     if(fractal_dist < -Debug.x){
         fractal_dist = -fractal_dist - 2 * Debug.x;
     }*/
-    float fractal_dist = mandelbulbSDF(pos);
+    float fractal_dist = mengerSpongeSDF(pos, 2);
     float dist_scene = max(fractal_dist, -playerClipSDF(pos) * Debug.y);
     return dist_scene;
     //return fractal_dist;
 }
 
-float4 RayMarchScene(float3 rayOrigin, float3 rayDir)
+RayHitInfo RayMarchScene(float3 rayOrigin, float3 rayDir)
 {
+    RayHitInfo info;
     float totalDist = 0.0;
 
-    for (int i = 0; i < MAX_STEPS; i++)
+    for (int i = 0; i < MAX_STEPS || totalDist > MAX_DIST; i++)
     {
         float3 pos = rayOrigin + rayDir * totalDist;
         float dist = sceneSDF(pos);
 
         if (dist < EPSILON){
-            return float4(pos, totalDist);
+            info.hitPosition = pos;
+            info.distanceTraveled = totalDist;
+            info.stepsTaken = i;
+            return info;
         }
 
         totalDist += dist;
-        if (totalDist > MAX_DIST)
-            return float4(0, 0, 0, INFINITY);
     }
-
-    return float4(0, 0, 0, INFINITY);
+    info.distanceTraveled = INFINITY;
+    return info;
 }

@@ -19,8 +19,13 @@ float3 _PlayerPos;
 float _PlayerSize;
 float3 _LightDirection;
 
-
 float4 Debug;
+
+struct RayHitInfo {
+	float3 hitPosition;
+	float distanceTraveled;
+	int stepsTaken;
+};
 
 #include "Assets/RayMarching/Shaders/SDFs.hlsl"
 #include "Assets/RayMarching/Shaders/Fractal_SDFs.hlsl"
