@@ -13,6 +13,8 @@ public class Controller : MonoBehaviour
     public Vector4 DebugVector;
     public Light directionalLight;
     public Texture2D spaceshipTexture;
+    public GameScene scene;
+
     void Start()
     {
         kernel = computeShader.FindKernel("CSMain");

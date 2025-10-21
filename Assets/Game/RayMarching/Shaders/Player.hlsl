@@ -1,4 +1,4 @@
-#include "Assets/RayMarching/Shaders/Globals.hlsl"
+#include "Assets/Game/RayMarching/Shaders/Globals.hlsl"
 
 float4 RaySphereIntersection(float3 rayOrigin, float3 rayDir, float3 sphereCenter, float sphereRadius)
 {

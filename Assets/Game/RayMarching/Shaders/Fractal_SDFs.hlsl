@@ -1,16 +1,16 @@
-#include "Assets/RayMarching/Shaders/Globals.hlsl"
+#include "Assets/Game/RayMarching/Shaders/Globals.hlsl"
 
 float mandelbulbSDF(float3 p, int maxIter = 20, float power = 8.0)
 {
     float3 z = p;
     float dr = 1.0;
-    float r = 0.0;
+    float r = length(z);
+    if (r > 2.0) {
+        return r - 1.5;
+    }
 
     for (int i = 0; i < maxIter; i++)
     {
-        r = length(z);
-        if (r > 2.0) break;
-
         // Convert to polar coordinates
         float theta = acos(z.z / r);
         float phi = atan2(z.y, z.x);
@@ -25,6 +25,10 @@ float mandelbulbSDF(float3 p, int maxIter = 20, float power = 8.0)
 
         z = zr * float3(sin(theta) * cos(phi), sin(phi) * sin(theta), cos(theta));
         z += p; // add original point
+
+        r = length(z);
+        if (r > 2.0)
+            break;
     }
     return 0.5 * log(r) * r / dr;
 }

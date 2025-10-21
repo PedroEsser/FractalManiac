@@ -32,11 +32,7 @@ public class Player : MonoBehaviour
 
         Vector3 move = Vector3.zero;
         Vector3 forward = transform.forward;
-        forward.y = 0;
-        forward = forward.normalized;
         Vector3 right = transform.right;
-        right.y = 0;
-        right = right.normalized;
 
         move -= forward * (Input.GetKey(KeyCode.S) ? 1 : 0);
         move += forward * (Input.GetKey(KeyCode.W) ? 1 : 0);
