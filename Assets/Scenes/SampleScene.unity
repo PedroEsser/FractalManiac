@@ -458,7 +458,7 @@ MonoBehaviour:
   computeShader: {fileID: 7200000, guid: 50407b67767f0a845800e32fc7df5946, type: 3}
   image: {fileID: 1134801435}
   target: {fileID: 0}
-  DebugVector: {x: 10, y: 1, z: 0.5, w: 0}
+  DebugVector: {x: 0, y: 0, z: 0, w: 0}
   directionalLight: {fileID: 705507994}
   spaceshipTexture: {fileID: 2800000, guid: 23dd35ea7f0a80042b8e0acbcb07af04, type: 3}
   scene: {fileID: 0}
@@ -496,13 +496,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b153bc63713131649ab3a0aa532a0c13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  position: {x: 0, y: 0, z: -2}
+  position: {x: 0, y: 0, z: -1}
   velocity: {x: 0, y: 0, z: 0}
-  maxSpeed: 3
+  maxSpeed: 5
   size: 0.01
   smoothSize: 0
-  accelerationFactor: 3
-  gravity: 0.01
+  accelerationFactor: 2
+  gravity: 0.25
   minSize: 0.000001
   maxSize: 1
 --- !u!114 &963194232

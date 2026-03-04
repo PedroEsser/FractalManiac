@@ -19,6 +19,12 @@ float3 _PlayerPos;
 float _PlayerSize;
 float3 _LightDirection;
 
+float3 FractalColor;
+float3 AmbientLight;
+float DiffuseComponent;
+float SpecularComponent;
+float Shininess;
+
 float4 Debug;
 
 struct RayHitInfo {
@@ -26,6 +32,8 @@ struct RayHitInfo {
 	float distanceTraveled;
 	int stepsTaken;
 };
+
+
 
 #include "Assets/Game/RayMarching/Shaders/SDFs.hlsl"
 #include "Assets/Game/RayMarching/Shaders/Fractal_SDFs.hlsl"

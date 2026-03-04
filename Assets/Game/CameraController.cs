@@ -19,7 +19,7 @@ public class CameraController : MonoBehaviour
         smoothPosition = GetPositionBehindPlayer();
     }
 
-    void Update()
+    void FixedUpdate()
     {
         HandleMouseLook();
         player.HandleMovement();

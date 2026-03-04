@@ -18,9 +18,9 @@ float sceneSDF(float3 pos)
     if(fractal_dist < -Debug.x){
         fractal_dist = -fractal_dist - 2 * Debug.x;
     }*/
-    //float fractal_dist = mandelbulbSDF(pos, 10);
-    float fractal_dist = mengerSpongeSDF(pos, 4);
-    float dist_scene = max(fractal_dist, -cameraClipSDF(pos) * Debug.y);
+    //float fractal_dist = mandelbulbSDF(pos);
+    float fractal_dist = mengerSpongeSDF(pos, 3);
+    float dist_scene = max(fractal_dist, -cameraClipSDF(pos));
     return dist_scene;
     //return fractal_dist;
 }

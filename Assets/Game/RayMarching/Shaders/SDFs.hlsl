@@ -6,7 +6,7 @@ float smoothMax(float a, float b, float k)
 
 
 
-float sphere_sdf(float3 d, float radius){
+float sphere_sdf(float3 d, float radius = 1){
     return length(d) - radius;
 }
 

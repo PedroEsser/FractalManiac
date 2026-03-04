@@ -1,11 +1,5 @@
 #include "Assets/Game/RayMarching/Shaders/Globals.hlsl"
 
-float3 FractalColor = float3(1, 0.7, 0.8);
-float3 AmbientLight = float3(.3, .3, .3);
-float DiffuseComponent = 0.3;
-float SpecularComponent = 0.8;
-float Shininess = 32.0;
-
 /*float SoftShadowAt(float3 pos, float mint = 0.01, float tmax = 2, float w = 0.1, int technique = 1)
 {
     float3 ro = pos - LightDirection * tmax;
@@ -62,7 +56,7 @@ float ShadowAt(float3 pos)
 
 float3 NormalAt(float3 p)
 {
-    float2 eps = float2(0.001, 0);
+    float2 eps = float2(EPSILON, 0);
 
     float dx = sceneSDF(p + eps.xyy) - sceneSDF(p - eps.xyy);
     float dy = sceneSDF(p + eps.yxy) - sceneSDF(p - eps.yxy);
@@ -72,14 +66,14 @@ float3 NormalAt(float3 p)
 }
 
 
-float3 SceneColorAt(RayHitInfo sceneHitInfo, float3 rayDirection)
+float3 SceneColorAt(RayHitInfo sceneHitInfo, float3 rayDirection, uint bouncesLeft = 1)
 {
     if(sceneHitInfo.distanceTraveled == INFINITY){
         return float3(0, 0, 0);
     }
 
     float shadow = ShadowAt(sceneHitInfo.hitPosition);
-    float fog = 1 / (1 + sceneHitInfo.distanceTraveled * Debug.z);
+    float fog = 1 / (1 + sceneHitInfo.distanceTraveled * 0.2);
     float3 normal = NormalAt(sceneHitInfo.hitPosition);
 
     float diff = max(dot(normal, _LightDirection), 0.0);
@@ -88,8 +82,11 @@ float3 SceneColorAt(RayHitInfo sceneHitInfo, float3 rayDirection)
     float3 viewDir = -rayDirection;
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), Shininess);
     float3 specular = SpecularComponent * spec * float3(1, 1, 1);
+    //float3 fractalColor = mandelbulbColorAt(sceneHitInfo.hitPosition);
+    float3 fractalColor = (normal + 1) / 2;
 
-    float3 objectColor = (0.5 + normal/2) + 0.1 * float3(0.8, 0.3, 0.2) * pow(1.0 - abs(dot(normal, viewDir)), 4.0);
+    float3 objectColor = fractalColor + 0.1 * float3(0.8, 0.3, 0.2) * pow(1.0 - abs(dot(normal, viewDir)), 4.0);
+    //float3 objectColor = fractalColor;
     return (AmbientLight + diffuse + specular) * objectColor * fog * shadow;
 }
 
